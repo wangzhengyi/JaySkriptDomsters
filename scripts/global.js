@@ -198,6 +198,77 @@ function prepareInternalnav() {
 	}
 }
 
+function showPic(whichpic) {
+	if (!document.getElementById || !document.getElementById("placeholder")) {
+		return true;
+	}
+
+	var source = whichpic.getAttribute("href");
+	var placeholder = document.getElementById("placeholder");
+	placeholder.setAttribute("src", source);
+
+	if (!document.getElementById("description")) {
+		return true;
+	}
+
+	var text = "";
+	if (whichpic.getAttribute("title")) {
+		text = whichpic.getAttribute("title");
+	}
+
+	var description = document.getElementById("description");
+	if (description.firstChild.nodeType == 3) {
+		description.firstChild.nodeValue = description;
+	}
+
+	return false;
+}
+
+function preparePlaceholder() {
+	if (!document.createElement || !document.createTextNode || !document.getElementById || !document.getElementsByTagName) {
+		return false;
+	}
+
+	if (!document.getElementById("imagegallery")) {
+		return false;
+	}
+
+	var imagegallery = document.getElementById("imagegallery");
+
+	var placeholder = document.createElement("img");
+	placeholder.setAttribute("id", "placeholder");
+	placeholder.setAttribute("src", "images/placeholder.gif");
+	placeholder.setAttribute("alt", "my image gallery");
+
+	var description = document.createElement("p");
+	description.setAttribute("id", "description");
+	var descText = document.createTextNode("Choose an image");
+	description.appendChild(descText);
+
+	insertAfter(description, imagegallery);
+	insertAfter(placeholder, description);
+}
+
+function prepareGallery() {
+	if (!document.getElementById || !document.getElementsByTagName) {
+		return false;
+	}
+
+	var imagegallery = document.getElementById("imagegallery");
+	var links = imagegallery.getElementsByTagName("a");
+
+	for (var i = 0; i < links.length; i++) {
+		links[i].onclick = function() {
+			var res = showPic(this);
+			console.log(res);
+			return res;
+		};
+	}
+}
+
+
 addLoadEvent(highlightPage);
 addLoadEvent(prepareSlideShow);
 addLoadEvent(prepareInternalnav);
+addLoadEvent(preparePlaceholder);
+addLoadEvent(prepareGallery);
