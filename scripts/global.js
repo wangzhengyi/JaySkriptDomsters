@@ -20,13 +20,17 @@ function insertAfter(newElement, targetElement) {
 }
 
 function addClass(element, value) {
-	if (!element.className) {
+	var test = (!element.className);
+	console.log("initial:" + element.className + ", value=" + value + ", important=" + test);
+	if (typeof element.className === "undefined") {
 		element.className = value;
+		console.log("111 value=" + value + ", classname=" + element.classname);
 	} else {
 		var newClassName = element.className;
 		newClassName += " ";
 		newClassName += value;
 		element.className = newClassName;
+		console.log("222 classname=" + element.className + ", newClassName=" + newClassName);
 	}
 }
 
@@ -250,7 +254,7 @@ function preparePlaceholder() {
 }
 
 function prepareGallery() {
-	if (!document.getElementById || !document.getElementsByTagName) {
+	if (!document.getElementById || !document.getElementsByTagName || !document.getElementById("imagegallery")) {
 		return false;
 	}
 
@@ -267,8 +271,95 @@ function prepareGallery() {
 }
 
 
+function stripeTables() {
+	if (!document.getElementsByTagName) {
+		return false;
+	}
+
+	var tables = document.getElementsByTagName("table");
+	if (tables.length == 0) {
+		return false;
+	}
+
+	var rows = tables[0].getElementsByTagName("tr");
+	for (var i = 0; i < rows.length; i++) {
+		if (i % 2 == 1) {
+			addClass(rows[i], "odd");
+		}
+	}
+}
+
+function highlightRows() {
+	if (!document.getElementsByTagName) {
+		return false;
+	}
+
+	var rows = document.getElementsByTagName("tr");
+	for (var i = 0; i < rows.length; i++) {
+		rows[i].oldClassName = rows[i].className;
+		rows[i].onmouseover = function() {
+			addClass(this, "highlight");
+		};
+		rows[i].onmouseout = function() {
+			this.className = this.oldClassName;
+		};
+	}
+}
+
+function displayAbbreviations() {
+	if (!document.getElementsByTagName || !document.createElement || !document.createTextNode) {
+		return false;
+	}
+
+	var abbreviations = document.getElementsByTagName("abbr");
+	if (abbreviations.length == 0) {
+		return false;
+	}
+
+	var defs = new Array();
+	for (var i = 0; i < abbreviations.length; i++) {
+		var currAbr = abbreviations[i];
+		if (currAbr.childNodes.length < 1) continue;
+		var definition = currAbr.getAttribute("title");
+		var key = currAbr.lastChild.nodeValue;
+		defs[key] = definition;
+	}
+
+	var dlist = document.createElement("dl");
+	for (key in defs) {
+		var dtitle = document.createElement("dt");
+		var dtitleText = document.createTextNode(key);
+		dtitle.appendChild(dtitleText);
+		
+		var ddesc = document.createElement("dd");
+		var ddescText = document.createTextNode(defs[key]);
+		ddesc.appendChild(ddescText);
+
+		dlist.appendChild(dtitle);
+		dlist.appendChild(ddesc);
+	}
+
+	if (dlist.childNodes.length < 1) {
+		return false;
+	}
+
+	var header = document.createElement("h3");
+	var headerText = document.createTextNode("Abbreviations");
+	header.appendChild(headerText);
+
+	var articles = document.getElementsByTagName("article");
+	if (articles.length == 0) {
+		return false;
+	}
+	articles[0].appendChild(header);
+	articles[0].appendChild(dlist);
+}
+
 addLoadEvent(highlightPage);
 addLoadEvent(prepareSlideShow);
 addLoadEvent(prepareInternalnav);
 addLoadEvent(preparePlaceholder);
 addLoadEvent(prepareGallery);
+addLoadEvent(stripeTables);
+addLoadEvent(highlightRows);
+addLoadEvent(displayAbbreviations);
